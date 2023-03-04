@@ -4,8 +4,11 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoute = require("./routes/userRoute");
+const contactRoute = require("./routes/contactRoute");
+const productRoute = require("./routes/productRoute");
 const errorHandler = require("./middleWare/errorMiddleware");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 
 const app = express();
 
@@ -14,9 +17,19 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://pinvent-app.vecel.app"],
+    credentials: true,
+  })
+);
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 //Routes Middleware
 app.use("/api/users", userRoute);
+app.use("/api/products", productRoute);
+app.use("/api/contactus", contactRoute);
 
 //Routes
 app.get("/", (req, res) => {
