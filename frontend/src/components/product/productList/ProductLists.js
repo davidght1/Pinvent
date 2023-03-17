@@ -10,6 +10,13 @@ import {
   selectFilteredProducts,
 } from "../../../redux/features/product/filterSlice";
 import ReactPaginate from "react-paginate";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+import {
+  deleteProduct,
+  getProducts,
+} from "../../../redux/features/product/productSlice";
+import { Link } from "react-router-dom";
 
 const ProductLists = ({ products, isLoading }) => {
   const [search, setSearch] = useState("");
@@ -24,6 +31,31 @@ const ProductLists = ({ products, isLoading }) => {
     }
     return text;
   };
+
+  // Delete Product
+  const delProduct = async (id) => {
+    await dispatch(deleteProduct(id));
+    await dispatch(getProducts());
+  };
+
+  const confirmDelete = (id) => {
+    confirmAlert({
+      title: "Delete Product",
+      message: "Are you sure u want to delete product?",
+      buttons: [
+        {
+          label: "Delete",
+          onClick: () => delProduct(id),
+        },
+        {
+          label: "Cancel",
+          // onClick: () => alert("Click No"),
+        },
+      ],
+    });
+  };
+
+  // End of Delete Product
 
   // Begin Pagination
 
@@ -104,13 +136,19 @@ const ProductLists = ({ products, isLoading }) => {
                       </td>
                       <td className="icons">
                         <span>
-                          <AiOutlineEye size={25} color={"purple"} />
+                          <Link to={`/product-detail/${_id}`}>
+                            <AiOutlineEye size={25} color={"purple"} />
+                          </Link>
                         </span>
                         <span>
                           <FaEdit size={20} color={"green"} />
                         </span>
                         <span>
-                          <FaTrashAlt size={20} color={"red"} />
+                          <FaTrashAlt
+                            size={20}
+                            color={"red"}
+                            onClick={() => confirmDelete(_id)}
+                          />
                         </span>
                       </td>
                     </tr>
